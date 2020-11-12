@@ -5,12 +5,12 @@
         <h3>Buat Kategori Baru</h3>
       </el-col>
     </el-row>
-    <el-form label-position="top" label-width="100px" :model="form">
-      <el-form-item label="Nama Kategori">
+    <el-form ref="categoryForm" label-position="top" label-width="100px" :model="form" :rules="rules">
+      <el-form-item label="Nama Kategori" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="createCategory()">
+        <el-button type="primary" @click="submitForm('categoryForm')">
           Submit
         </el-button>
       </el-form-item>
@@ -25,12 +25,24 @@ export default {
     return {
       form: {
         name: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: 'Nama harus diisi', trigger: 'blur' }
+        ]
       }
     }
   },
-  created () {
-  },
   methods: {
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.createCategory()
+        } else {
+          return false
+        }
+      })
+    },
     async createCategory () {
       await axios.post('api/category', this.form)
         .then((response) => {
